@@ -1133,6 +1133,12 @@ button { color: inherit; font: inherit; }
   gap: 16px;
   max-width: 440px;
 }
+.hero-actions-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .hero-cv-btn {
   display: inline-flex;
   align-items: center;
@@ -1148,11 +1154,37 @@ button { color: inherit; font: inherit; }
   transition: all .2s ease;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }
-.hero-cv-btn:hover {
+.hero-primary-btn {
   background: var(--primary);
   border-color: var(--primary);
+  color: #ffffff;
+}
+.hero-primary-btn:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+.hero-secondary-btn {
+  background: #ffffff;
+  border-color: var(--line);
+  color: #0f172a;
+}
+.hero-secondary-btn:hover {
+  background: #f8fafc;
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+.contact-portfolio-btn {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+.contact-portfolio-btn:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
 }
 .contact-cv-btn {
   min-height: 48px;
@@ -1301,4 +1333,39 @@ button { color: inherit; font: inherit; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  .topbar {
+    position: relative !important;
+    box-shadow: none !important;
+    border-bottom: 2px solid #0f172a !important;
+  }
+  .menu-toggle, .menu-backdrop, .lang-switcher, .hero-index {
+    display: none !important;
+  }
+  .hero-line, .hero-meta, [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero {
+    min-height: auto !important;
+    padding-bottom: 30px !important;
+  }
+  .project-card, .education-card, .experience-item, .capabilities-group {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .section-pad {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
 }

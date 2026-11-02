@@ -51,6 +51,7 @@ export const translations = {
       about: "TENTANG",
       journey: "PENGALAMAN",
       contact: "KONTAK",
+      portfolioPdf: "PORTOFOLIO (PDF)",
       resume: "CV (PDF)",
     },
     topbar: {
@@ -70,6 +71,7 @@ export const translations = {
       availableFor: "TERBUKA UNTUK",
       availableSub: "KOLABORASI & PELUANG BARU",
       scrollPrompt: "GULIR KE BAWAH",
+      downloadPortfolio: "UNDUH PORTOFOLIO (PDF)",
       downloadCv: "UNDUH CV (PDF)",
     },
     about: {
@@ -277,7 +279,8 @@ export const translations = {
       startBtn: "KIRIM PESAN",
       copyBtn: "SALIN EMAIL",
       copiedBtn: "EMAIL TERSALIN!",
-      downloadCv: "UNDUH CV LENGKAP (PDF)",
+      downloadPortfolio: "UNDUH PORTOFOLIO (PDF)",
+      downloadCv: "UNDUH CV (PDF)",
     },
     footer: {
       tagline: "INFORMATICS ENGINEER · WEB & MOBILE DEVELOPER",
@@ -290,6 +293,7 @@ export const translations = {
       about: "ABOUT",
       journey: "JOURNEY",
       contact: "CONTACT",
+      portfolioPdf: "PORTFOLIO (PDF)",
       resume: "RESUME (PDF)",
     },
     topbar: {
@@ -309,6 +313,7 @@ export const translations = {
       availableFor: "AVAILABLE FOR",
       availableSub: "NEW OPPORTUNITIES & COLLABORATIONS",
       scrollPrompt: "SCROLL TO EXPLORE",
+      downloadPortfolio: "DOWNLOAD PORTFOLIO (PDF)",
       downloadCv: "DOWNLOAD CV (PDF)",
     },
     about: {
@@ -516,7 +521,8 @@ export const translations = {
       startBtn: "SEND AN EMAIL",
       copyBtn: "COPY EMAIL",
       copiedBtn: "EMAIL COPIED!",
-      downloadCv: "DOWNLOAD FULL RESUME (PDF)",
+      downloadPortfolio: "DOWNLOAD PORTFOLIO (PDF)",
+      downloadCv: "DOWNLOAD RESUME (PDF)",
     },
     footer: {
       tagline: "INFORMATICS ENGINEER · WEB & MOBILE DEVELOPER",

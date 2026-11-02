@@ -8,6 +8,7 @@ import {
   AtSign,
   Check,
   FileDown,
+  FileText,
   Github,
   Instagram,
   Linkedin,
@@ -147,14 +148,14 @@ export default function Home() {
               {t.nav.contact} <ArrowUpRight size={13} />
             </a>
             <a
-              href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
-              download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
+              href={lang === "id" ? "/portfolio-andrian-baros.pdf" : "/portfolio-andrian-baros-en.pdf"}
+              download={lang === "id" ? "Portofolio_Andrian_Baros.pdf" : "Portfolio_Andrian_Baros_EN.pdf"}
               className="nav-cv-btn"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={lang === "id" ? "Unduh CV format PDF" : "Download CV in PDF format"}
+              aria-label={lang === "id" ? "Unduh Portofolio format PDF" : "Download Portfolio in PDF format"}
             >
-              <FileDown size={13} /> {t.nav.resume}
+              <FileDown size={13} /> {t.nav.portfolioPdf}
             </a>
 
             {/* Desktop Language Switcher */}
@@ -252,15 +253,28 @@ export default function Home() {
           <div className="hero-bottom">
             <div className="hero-intro-wrapper hero-meta">
               <p className="hero-intro">{t.hero.intro}</p>
-              <a
-                href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
-                download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
-                className="hero-cv-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FileDown size={13} /> {t.hero.downloadCv}
-              </a>
+              <div className="hero-actions-row">
+                <a
+                  href={lang === "id" ? "/portfolio-andrian-baros.pdf" : "/portfolio-andrian-baros-en.pdf"}
+                  download={lang === "id" ? "Portofolio_Andrian_Baros.pdf" : "Portfolio_Andrian_Baros_EN.pdf"}
+                  className="hero-cv-btn hero-primary-btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={lang === "id" ? "Unduh Portofolio lengkap format PDF" : "Download full portfolio PDF"}
+                >
+                  <FileDown size={14} /> {t.hero.downloadPortfolio}
+                </a>
+                <a
+                  href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
+                  download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
+                  className="hero-cv-btn hero-secondary-btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={lang === "id" ? "Unduh CV format PDF" : "Download CV in PDF format"}
+                >
+                  <FileText size={14} /> {t.hero.downloadCv}
+                </a>
+              </div>
             </div>
             <a
               className="round-link hero-meta"
@@ -532,13 +546,23 @@ export default function Home() {
                 {copied ? t.contact.copiedBtn : t.contact.copyBtn}
               </button>
               <a
+                href={lang === "id" ? "/portfolio-andrian-baros.pdf" : "/portfolio-andrian-baros-en.pdf"}
+                download={lang === "id" ? "Portofolio_Andrian_Baros.pdf" : "Portfolio_Andrian_Baros_EN.pdf"}
+                className="contact-cv-btn contact-portfolio-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileDown size={15} />
+                {t.contact.downloadPortfolio}
+              </a>
+              <a
                 href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
                 download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
                 className="contact-cv-btn"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FileDown size={15} />
+                <FileText size={15} />
                 {t.contact.downloadCv}
               </a>
             </div>
