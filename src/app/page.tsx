@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   AtSign,
   Check,
+  FileDown,
   Github,
   Instagram,
   Linkedin,
@@ -145,6 +146,16 @@ export default function Home() {
             <a href="#contact" onClick={closeMenu}>
               {t.nav.contact} <ArrowUpRight size={13} />
             </a>
+            <a
+              href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
+              download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
+              className="nav-cv-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={lang === "id" ? "Unduh CV format PDF" : "Download CV in PDF format"}
+            >
+              <FileDown size={13} /> {t.nav.resume}
+            </a>
 
             {/* Desktop Language Switcher */}
             <div
@@ -239,7 +250,18 @@ export default function Home() {
             </span>
           </h1>
           <div className="hero-bottom">
-            <p className="hero-intro hero-meta">{t.hero.intro}</p>
+            <div className="hero-intro-wrapper hero-meta">
+              <p className="hero-intro">{t.hero.intro}</p>
+              <a
+                href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
+                download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
+                className="hero-cv-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileDown size={13} /> {t.hero.downloadCv}
+              </a>
+            </div>
             <a
               className="round-link hero-meta"
               href="#work"
@@ -509,6 +531,16 @@ export default function Home() {
                 {copied ? <Check size={16} /> : <AtSign size={16} />}
                 {copied ? t.contact.copiedBtn : t.contact.copyBtn}
               </button>
+              <a
+                href={lang === "id" ? "/cv-andrian-baros.pdf" : "/cv-andrian-baros-en.pdf"}
+                download={lang === "id" ? "CV_Andrian_Baros.pdf" : "CV_Andrian_Baros_EN.pdf"}
+                className="contact-cv-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileDown size={15} />
+                {t.contact.downloadCv}
+              </a>
             </div>
           </div>
         </section>

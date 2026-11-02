@@ -51,6 +51,7 @@ export const translations = {
       about: "TENTANG",
       journey: "PENGALAMAN",
       contact: "KONTAK",
+      resume: "CV (PDF)",
     },
     topbar: {
       status: "INFORMATICS ENGINEER · BANDUNG, ID",
@@ -69,6 +70,7 @@ export const translations = {
       availableFor: "TERBUKA UNTUK",
       availableSub: "KOLABORASI & PELUANG BARU",
       scrollPrompt: "GULIR KE BAWAH",
+      downloadCv: "UNDUH CV (PDF)",
     },
     about: {
       labelNo: "01 / TENTANG SAYA",
@@ -275,6 +277,7 @@ export const translations = {
       startBtn: "KIRIM PESAN",
       copyBtn: "SALIN EMAIL",
       copiedBtn: "EMAIL TERSALIN!",
+      downloadCv: "UNDUH CV LENGKAP (PDF)",
     },
     footer: {
       tagline: "INFORMATICS ENGINEER · WEB & MOBILE DEVELOPER",
@@ -287,6 +290,7 @@ export const translations = {
       about: "ABOUT",
       journey: "JOURNEY",
       contact: "CONTACT",
+      resume: "RESUME (PDF)",
     },
     topbar: {
       status: "INFORMATICS ENGINEER · BANDUNG, ID",
@@ -305,6 +309,7 @@ export const translations = {
       availableFor: "AVAILABLE FOR",
       availableSub: "NEW OPPORTUNITIES & COLLABORATIONS",
       scrollPrompt: "SCROLL TO EXPLORE",
+      downloadCv: "DOWNLOAD CV (PDF)",
     },
     about: {
       labelNo: "01 / A LITTLE ABOUT ME",
@@ -511,6 +516,7 @@ export const translations = {
       startBtn: "SEND AN EMAIL",
       copyBtn: "COPY EMAIL",
       copiedBtn: "EMAIL COPIED!",
+      downloadCv: "DOWNLOAD FULL RESUME (PDF)",
     },
     footer: {
       tagline: "INFORMATICS ENGINEER · WEB & MOBILE DEVELOPER",
