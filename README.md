@@ -2,7 +2,7 @@
 
 Professional developer portfolio for **Andrian Baros**, Informatics Engineering student at Universitas Komputer Indonesia (UNIKOM) and Web & Mobile Developer based in Bandung, Indonesia.
 
-Live preview: [https://andrianbaros.vercel.app](https://andrianbaros.vercel.app)
+Live preview: [https://barosportfolio.vercel.app](https://barosportfolio.vercel.app)
 
 ---
 
