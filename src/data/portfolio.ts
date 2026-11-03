@@ -5,7 +5,7 @@ export interface ProjectItem {
   year: string;
   description: string;
   stack: string[];
-  visual: "qread" | "bunnies" | "haven" | "garden" | "village";
+  visual: "qread" | "bunnies" | "haven" | "garden" | "village" | "toefl";
   note: string;
   url?: string;
   featured?: boolean;
@@ -80,6 +80,23 @@ export const projectsData: ProjectItem[] = [
   },
   {
     number: "02",
+    name: "AB TOEFL TRAINING",
+    type: "WEB · EDUTECH & EXAM SIMULATION",
+    year: "2026",
+    description:
+      "Platform latihan mandiri TOEFL ITP komprehensif: simulasi ujian penuh 140 soal, Listening dengan mode Examiner manual, Structure & Written Expression, Reading split-screen akademik, dan Vocabulary practice.",
+    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Edutech", "Exam Simulation"],
+    visual: "toefl",
+    note: "Live website · ab-toefl-training.vercel.app",
+    url: "https://ab-toefl-training.vercel.app/",
+    highlights: [
+      "Full 140-question official TOEFL ITP simulation mode",
+      "Manual Examiner Reader screen for listening proctors",
+      "Reading split-screen view & vocabulary flashcards",
+    ],
+  },
+  {
+    number: "03",
     name: "BUNNIES WORLD",
     type: "WEB · INTERACTIVE FAN PORTAL",
     year: "2026",
@@ -91,7 +108,7 @@ export const projectsData: ProjectItem[] = [
     url: "https://www.bunniesworld.my.id/",
   },
   {
-    number: "03",
+    number: "04",
     name: "HAVENGPT",
     type: "WEB · AI CONVERSATIONAL PLATFORM",
     year: "2026",
@@ -103,7 +120,7 @@ export const projectsData: ProjectItem[] = [
     url: "https://havengpt.vercel.app/",
   },
   {
-    number: "04",
+    number: "05",
     name: "ILMIS GARDEN",
     type: "WEB · E-COMMERCE & ATELIER",
     year: "2025—2026",
@@ -115,7 +132,7 @@ export const projectsData: ProjectItem[] = [
     url: "https://ilmisgarden.com/",
   },
   {
-    number: "05",
+    number: "06",
     name: "VILLAGE COMPLAINT APP",
     type: "MOBILE APP · CIVIC TECH",
     year: "2021",

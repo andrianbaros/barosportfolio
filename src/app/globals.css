@@ -393,7 +393,8 @@ button { color: inherit; font: inherit; }
   background: var(--primary);
 }
 
-/* BUNNIES WORLD Browser Mockup */
+/* TOEFL & BUNNIES WORLD Browser Mockup */
+.artwork-toefl-mockup,
 .artwork-bunnies-mockup {
   position: absolute;
   inset: 0;

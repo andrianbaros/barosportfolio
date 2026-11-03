@@ -136,7 +136,7 @@ export default function Home() {
             aria-label={lang === "id" ? "Navigasi utama" : "Main navigation"}
           >
             <a href="#work" onClick={closeMenu}>
-              {t.nav.work} <span>05</span>
+              {t.nav.work} <span>06</span>
             </a>
             <a href="#about" onClick={closeMenu}>
               {t.nav.about}
@@ -296,7 +296,7 @@ export default function Home() {
           <div className="hero-index">
             <span>{t.hero.scrollPrompt}</span>
             <span>
-              00 — 05 <ArrowDown size={13} />
+              00 — 06 <ArrowDown size={13} />
             </span>
           </div>
         </section>

@@ -128,8 +128,30 @@ const ilmisScreenshots: ScreenshotItem[] = [
   },
 ];
 
+const toeflScreenshots: ScreenshotItem[] = [
+  {
+    src: "/projects/ab-toefl/toefl-dashboard.png",
+    title: { id: "Dashboard TOEFL ITP & Statistik Skor", en: "TOEFL ITP Dashboard & Score Analytics" },
+    tag: { id: "01 · BERANDA & TARGET", en: "01 · DASHBOARD & TARGET" },
+    type: "desktop",
+  },
+  {
+    src: "/projects/ab-toefl/toefl-desktop.png",
+    title: { id: "Simulasi 140 Soal & Kategori Latihan", en: "140Q Simulation & Practice Hub" },
+    tag: { id: "02 · SIMULASI 140 SOAL", en: "02 · 140Q SIMULATION" },
+    type: "desktop",
+  },
+  {
+    src: "/projects/ab-toefl/toefl-mobile.png",
+    title: { id: "Tampilan Mobile Responsif", en: "Mobile Responsive Viewport" },
+    tag: { id: "03 · MOBILE RESPONSIVE", en: "03 · MOBILE RESPONSIVE" },
+    type: "mobile",
+  },
+];
+
 export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
   const [currentQread, setCurrentQread] = useState(0);
+  const [currentToefl, setCurrentToefl] = useState(0);
   const [currentBunnies, setCurrentBunnies] = useState(0);
   const [currentGarden, setCurrentGarden] = useState(0);
   const [modalImage, setModalImage] = useState<{ src?: string; title: string; isCustom?: boolean; customType?: string } | null>(null);
@@ -279,6 +301,157 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                   height={960}
                   className="screenshot-modal-img"
                   style={{ maxHeight: "80vh", width: "auto", borderRadius: 12 }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  if (kind === "toefl") {
+    const active = toeflScreenshots[currentToefl];
+    const activeTitle = active.title[lang];
+    const activeTag = active.tag[lang];
+
+    const prevScreen = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setCurrentToefl((prev) => (prev === 0 ? toeflScreenshots.length - 1 : prev - 1));
+    };
+
+    const nextScreen = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setCurrentToefl((prev) => (prev === toeflScreenshots.length - 1 ? 0 : prev + 1));
+    };
+
+    const openPreview = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setModalImage({ src: active.src, title: activeTitle });
+    };
+
+    return (
+      <>
+        <div className="artwork artwork-toefl-mockup" aria-label="AB TOEFL TRAINING interactive showcase">
+          <div className="mockup-header">
+            <span>AB TOEFL TRAINING</span>
+            <span>/</span>
+            <span>{activeTag}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={prevScreen}
+            className="mockup-nav-btn mockup-nav-prev"
+            aria-label={labels.prevBtn}
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          <div className="browser-mockup">
+            <div className="browser-topbar">
+              <div className="browser-traffic-lights" aria-hidden="true">
+                <span className="tl-dot" />
+                <span className="tl-dot" />
+                <span className="tl-dot" />
+              </div>
+              <div className="browser-address-bar">
+                <span className="browser-lock">🔒</span>
+                <span className="browser-url">ab-toefl-training.vercel.app</span>
+              </div>
+              <button
+                type="button"
+                onClick={openPreview}
+                className="browser-zoom-btn"
+                title={labels.zoomTitle}
+                aria-label={labels.zoomTitle}
+              >
+                <Maximize2 size={12} />
+              </button>
+            </div>
+
+            <div className="browser-screen" onClick={openPreview}>
+              {active.type === "mobile" ? (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", padding: "12px 0" }}>
+                  <div style={{ width: 180, height: 260, borderRadius: 14, overflow: "hidden", border: "2px solid #0f172a", position: "relative", boxShadow: "0 8px 24px rgba(15,23,42,0.15)" }}>
+                    <Image
+                      src={active.src}
+                      alt={`AB TOEFL TRAINING mobile: ${activeTitle}`}
+                      fill
+                      sizes="(max-width: 640px) 180px, 240px"
+                      className="object-cover object-top"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <Image
+                  src={active.src}
+                  alt={`AB TOEFL TRAINING desktop: ${activeTitle}`}
+                  fill
+                  sizes="(max-width: 640px) 320px, 600px"
+                  priority={currentToefl === 0}
+                  className="object-cover object-top cursor-zoom-in"
+                />
+              )}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={nextScreen}
+            className="mockup-nav-btn mockup-nav-next"
+            aria-label={labels.nextBtn}
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          <div className="mockup-footer">
+            <div className="mockup-dots">
+              {toeflScreenshots.map((screen, idx) => (
+                <button
+                  key={screen.src}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentToefl(idx);
+                  }}
+                  className={`mockup-dot ${idx === currentToefl ? "active" : ""}`}
+                  aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
+                />
+              ))}
+            </div>
+            <span className="mockup-caption">{activeTitle}</span>
+          </div>
+        </div>
+
+        {modalImage && modalImage.src && (
+          <div
+            className="screenshot-modal-backdrop"
+            onClick={() => setModalImage(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modalImage.title}
+          >
+            <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="screenshot-modal-bar">
+                <span>{modalImage.title}</span>
+                <button
+                  type="button"
+                  onClick={() => setModalImage(null)}
+                  className="screenshot-modal-close"
+                  aria-label={labels.closeModal}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="screenshot-modal-body" style={{ display: "flex", justifyContent: "center", padding: "16px" }}>
+                <Image
+                  src={modalImage.src}
+                  alt={modalImage.title}
+                  width={1280}
+                  height={800}
+                  className="screenshot-modal-img"
+                  style={{ maxHeight: "80vh", width: "auto", borderRadius: 8 }}
                 />
               </div>
             </div>
