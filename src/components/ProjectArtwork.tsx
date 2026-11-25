@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import gsap from "gsap";
 import {
   ChevronLeft,
   ChevronRight,
@@ -15,10 +16,12 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
+  Radio,
+  Sparkles,
 } from "lucide-react";
 
 interface ProjectArtworkProps {
-  kind: "qread" | "bunnies" | "haven" | "garden" | "village" | string;
+  kind: "qread" | "bunnies" | "haven" | "garden" | "village" | "toefl" | string;
   lang?: "id" | "en";
 }
 
@@ -149,17 +152,259 @@ const toeflScreenshots: ScreenshotItem[] = [
   },
 ];
 
+interface BrowserCarouselProps {
+  brandLabel: string;
+  domain: string;
+  screenshots: ScreenshotItem[];
+  artworkClass: string;
+  headerClass?: string;
+  dotsClass?: string;
+  captionClass?: string;
+  lang: "id" | "en";
+  ariaLabel: string;
+  liveBadge?: string;
+  mobileFrameVariant?: "compact" | "phone";
+  onOpenModal: (src: string, title: string) => void;
+  labels: {
+    zoomTitle: string;
+    prevBtn: string;
+    nextBtn: string;
+  };
+}
+
+function BrowserCarousel({
+  brandLabel,
+  domain,
+  screenshots,
+  artworkClass,
+  headerClass = "",
+  dotsClass = "",
+  captionClass = "",
+  lang,
+  ariaLabel,
+  liveBadge,
+  mobileFrameVariant = "phone",
+  onOpenModal,
+  labels,
+}: BrowserCarouselProps) {
+  const [index, setIndex] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
+  const slideRef = useRef<HTMLDivElement>(null);
+
+  const active = screenshots[index];
+  const activeTitle = active.title[lang];
+  const activeTag = active.tag[lang];
+
+  useEffect(() => {
+    const el = slideRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.fromTo(
+      el,
+      { x: dir * 24, opacity: 0.25, scale: 0.985 },
+      { x: 0, opacity: 1, scale: 1, duration: 0.42, ease: "power3.out", clearProps: "transform" }
+    );
+  }, [index, dir]);
+
+  const goPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDir(-1);
+    setIndex((prev) => (prev === 0 ? screenshots.length - 1 : prev - 1));
+  };
+
+  const goNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDir(1);
+    setIndex((prev) => (prev === screenshots.length - 1 ? 0 : prev + 1));
+  };
+
+  const goTo = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDir(idx >= index ? 1 : -1);
+    setIndex(idx);
+  };
+
+  return (
+    <div className={`artwork ${artworkClass}`} aria-label={ariaLabel}>
+      <div className={`mockup-header ${headerClass}`}>
+        {liveBadge && (
+          <span className="mockup-live-pill" aria-hidden="true">
+            <span className="mockup-live-dot" />
+            {liveBadge}
+          </span>
+        )}
+        <span>{brandLabel}</span>
+        <span>/</span>
+        <span>{activeTag}</span>
+      </div>
+
+      <button
+        type="button"
+        onClick={goPrev}
+        className="mockup-nav-btn mockup-nav-prev"
+        aria-label={labels.prevBtn}
+        data-cursor="action"
+      >
+        <ChevronLeft size={16} />
+      </button>
+
+      <div className="browser-mockup" data-parallax-device>
+        <div className="browser-topbar">
+          <div className="browser-traffic-lights" aria-hidden="true">
+            <span className="tl-dot" />
+            <span className="tl-dot" />
+            <span className="tl-dot" />
+          </div>
+          <div className="browser-address-bar">
+            <span className="browser-lock">🔒</span>
+            <span className="browser-url">{domain}</span>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenModal(active.src, activeTitle);
+            }}
+            className="browser-zoom-btn"
+            title={labels.zoomTitle}
+            aria-label={labels.zoomTitle}
+            data-cursor="action"
+          >
+            <Maximize2 size={12} />
+          </button>
+        </div>
+
+        <div
+          className="browser-screen"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenModal(active.src, activeTitle);
+          }}
+        >
+          <div ref={slideRef} style={{ position: "relative", width: "100%", height: "100%" }}>
+            {active.type === "mobile" ? (
+              mobileFrameVariant === "compact" ? (
+                <div className="bunnies-mobile-wrapper">
+                  <div className="toefl-mobile-phone">
+                    <Image
+                      src={active.src}
+                      alt={`${brandLabel} mobile: ${activeTitle}`}
+                      fill
+                      sizes="(max-width: 640px) 180px, 240px"
+                      className="object-cover object-top"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="bunnies-mobile-wrapper">
+                  <div className="bunnies-mobile-phone">
+                    <Image
+                      src={active.src}
+                      alt={`${brandLabel} mobile: ${activeTitle}`}
+                      fill
+                      sizes="(max-width: 640px) 200px, 300px"
+                      className="object-cover object-top"
+                    />
+                  </div>
+                </div>
+              )
+            ) : active.type === "widget" ? (
+              <div className="bunnies-widget-wrapper">
+                <div className="bunnies-ai-widget">
+                  <Image
+                    src={active.src}
+                    alt={`${brandLabel}: ${activeTitle}`}
+                    fill
+                    sizes="(max-width: 640px) 240px, 360px"
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            ) : (
+              <Image
+                src={active.src}
+                alt={`${brandLabel} desktop: ${activeTitle}`}
+                fill
+                sizes="(max-width: 640px) 320px, 600px"
+                priority={index === 0}
+                className="object-cover object-top cursor-zoom-in"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={goNext}
+        className="mockup-nav-btn mockup-nav-next"
+        aria-label={labels.nextBtn}
+        data-cursor="action"
+      >
+        <ChevronRight size={16} />
+      </button>
+
+      <div className="mockup-footer">
+        <div className={`mockup-dots ${dotsClass}`}>
+          {screenshots.map((screen, idx) => (
+            <button
+              key={screen.src}
+              type="button"
+              onClick={(e) => goTo(idx, e)}
+              className={`mockup-dot ${idx === index ? "active" : ""}`}
+              aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
+              data-cursor="action"
+            />
+          ))}
+        </div>
+        <span className={`mockup-caption ${captionClass}`}>{activeTitle}</span>
+      </div>
+    </div>
+  );
+}
+
 export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
   const [currentQread, setCurrentQread] = useState(0);
-  const [currentToefl, setCurrentToefl] = useState(0);
-  const [currentBunnies, setCurrentBunnies] = useState(0);
-  const [currentGarden, setCurrentGarden] = useState(0);
-  const [modalImage, setModalImage] = useState<{ src?: string; title: string; isCustom?: boolean; customType?: string } | null>(null);
+  const [qreadDir, setQreadDir] = useState<1 | -1>(1);
+  const qreadSlideRef = useRef<HTMLDivElement>(null);
 
-  // Close modal on Escape key and manage body overflow
+  const [havenActiveHistory, setHavenActiveHistory] = useState(0);
+  const [villageFilter, setVillageFilter] = useState<"all" | "done" | "process">("all");
+
+  const [modalImage, setModalImage] = useState<{
+    src?: string;
+    title: string;
+    isCustom?: boolean;
+    customType?: string;
+    maxWidth?: number;
+  } | null>(null);
+  const modalCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = qreadSlideRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.fromTo(
+      el,
+      { x: qreadDir * 22, opacity: 0.25, scale: 0.97 },
+      { x: 0, opacity: 1, scale: 1, duration: 0.42, ease: "power3.out", clearProps: "transform" }
+    );
+  }, [currentQread, qreadDir]);
+
   useEffect(() => {
     if (!modalImage) return;
     document.body.classList.add("modal-open");
+
+    if (modalCardRef.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.fromTo(
+        modalCardRef.current,
+        { scale: 0.94, y: 18, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.35, ease: "power3.out", clearProps: "transform" }
+      );
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setModalImage(null);
     };
@@ -184,23 +429,30 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
 
     const prevScreen = (e: React.MouseEvent) => {
       e.stopPropagation();
+      setQreadDir(-1);
       setCurrentQread((prev) => (prev === 0 ? qreadScreenshots.length - 1 : prev - 1));
     };
 
     const nextScreen = (e: React.MouseEvent) => {
       e.stopPropagation();
+      setQreadDir(1);
       setCurrentQread((prev) => (prev === qreadScreenshots.length - 1 ? 0 : prev + 1));
     };
 
     const openPreview = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setModalImage({ src: active.src, title: activeTitle });
+      setModalImage({ src: active.src, title: activeTitle, maxWidth: 480 });
     };
 
     return (
       <>
         <div className="artwork artwork-qread-mockup" aria-label="QREAD mobile app interactive mockup">
           <div className="mockup-header">
+            <span className="qread-wave" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
             <span>QREAD APP</span>
             <span>/</span>
             <span>{activeTag}</span>
@@ -211,6 +463,7 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
               title={labels.zoomTitle}
               aria-label={labels.zoomTitle}
               style={{ marginLeft: 4 }}
+              data-cursor="action"
             >
               <Maximize2 size={11} />
             </button>
@@ -221,16 +474,17 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             onClick={prevScreen}
             className="mockup-nav-btn mockup-nav-prev"
             aria-label={labels.prevBtn}
+            data-cursor="action"
           >
             <ChevronLeft size={16} />
           </button>
 
-          <div className="phone-mockup cursor-zoom-in" onClick={openPreview}>
+          <div className="phone-mockup cursor-zoom-in" data-parallax-device onClick={openPreview}>
             <div className="phone-notch">
               <div className="phone-camera" />
             </div>
 
-            <div className="phone-screen">
+            <div className="phone-screen" ref={qreadSlideRef}>
               <Image
                 src={active.src}
                 alt={`QREAD screenshot: ${activeTitle}`}
@@ -250,6 +504,7 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             onClick={nextScreen}
             className="mockup-nav-btn mockup-nav-next"
             aria-label={labels.nextBtn}
+            data-cursor="action"
           >
             <ChevronRight size={16} />
           </button>
@@ -262,10 +517,12 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
+                    setQreadDir(idx >= currentQread ? 1 : -1);
                     setCurrentQread(idx);
                   }}
                   className={`mockup-dot ${idx === currentQread ? "active" : ""}`}
                   aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
+                  data-cursor="action"
                 />
               ))}
             </div>
@@ -281,7 +538,7 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             aria-modal="true"
             aria-label={modalImage.title}
           >
-            <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div ref={modalCardRef} className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="screenshot-modal-bar">
                 <span>{modalImage.title}</span>
                 <button
@@ -310,119 +567,55 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
     );
   }
 
-  if (kind === "toefl") {
-    const active = toeflScreenshots[currentToefl];
-    const activeTitle = active.title[lang];
-    const activeTag = active.tag[lang];
-
-    const prevScreen = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentToefl((prev) => (prev === 0 ? toeflScreenshots.length - 1 : prev - 1));
-    };
-
-    const nextScreen = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentToefl((prev) => (prev === toeflScreenshots.length - 1 ? 0 : prev + 1));
-    };
-
-    const openPreview = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setModalImage({ src: active.src, title: activeTitle });
-    };
+  if (kind === "toefl" || kind === "bunnies" || kind === "garden") {
+    const config =
+      kind === "toefl"
+        ? {
+            brandLabel: "AB TOEFL TRAINING",
+            domain: "ab-toefl-training.vercel.app",
+            screenshots: toeflScreenshots,
+            artworkClass: "artwork-toefl-mockup",
+            headerClass: "",
+            dotsClass: "",
+            captionClass: "",
+            ariaLabel: "AB TOEFL TRAINING interactive showcase",
+            liveBadge: "140Q EXAM ENGINE",
+            mobileFrameVariant: "compact" as const,
+          }
+        : kind === "bunnies"
+          ? {
+              brandLabel: "BUNNIES WORLD",
+              domain: "bunniesworld.my.id",
+              screenshots: bunniesScreenshots,
+              artworkClass: "artwork-bunnies-mockup",
+              headerClass: "bunnies-header-accent",
+              dotsClass: "bunnies-dots",
+              captionClass: "bunnies-caption",
+              ariaLabel: "BUNNIES WORLD interactive showcase",
+              liveBadge: "PWA PORTAL",
+              mobileFrameVariant: "phone" as const,
+            }
+          : {
+              brandLabel: "ILMIS GARDEN",
+              domain: "ilmisgarden.com",
+              screenshots: ilmisScreenshots,
+              artworkClass: "artwork-garden-mockup",
+              headerClass: "garden-header-accent",
+              dotsClass: "garden-dots",
+              captionClass: "garden-caption",
+              ariaLabel: "ILMIS GARDEN interactive showcase",
+              liveBadge: undefined,
+              mobileFrameVariant: "phone" as const,
+            };
 
     return (
       <>
-        <div className="artwork artwork-toefl-mockup" aria-label="AB TOEFL TRAINING interactive showcase">
-          <div className="mockup-header">
-            <span>AB TOEFL TRAINING</span>
-            <span>/</span>
-            <span>{activeTag}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={prevScreen}
-            className="mockup-nav-btn mockup-nav-prev"
-            aria-label={labels.prevBtn}
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          <div className="browser-mockup">
-            <div className="browser-topbar">
-              <div className="browser-traffic-lights" aria-hidden="true">
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-              </div>
-              <div className="browser-address-bar">
-                <span className="browser-lock">🔒</span>
-                <span className="browser-url">ab-toefl-training.vercel.app</span>
-              </div>
-              <button
-                type="button"
-                onClick={openPreview}
-                className="browser-zoom-btn"
-                title={labels.zoomTitle}
-                aria-label={labels.zoomTitle}
-              >
-                <Maximize2 size={12} />
-              </button>
-            </div>
-
-            <div className="browser-screen" onClick={openPreview}>
-              {active.type === "mobile" ? (
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", padding: "12px 0" }}>
-                  <div style={{ width: 180, height: 260, borderRadius: 14, overflow: "hidden", border: "2px solid #0f172a", position: "relative", boxShadow: "0 8px 24px rgba(15,23,42,0.15)" }}>
-                    <Image
-                      src={active.src}
-                      alt={`AB TOEFL TRAINING mobile: ${activeTitle}`}
-                      fill
-                      sizes="(max-width: 640px) 180px, 240px"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <Image
-                  src={active.src}
-                  alt={`AB TOEFL TRAINING desktop: ${activeTitle}`}
-                  fill
-                  sizes="(max-width: 640px) 320px, 600px"
-                  priority={currentToefl === 0}
-                  className="object-cover object-top cursor-zoom-in"
-                />
-              )}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={nextScreen}
-            className="mockup-nav-btn mockup-nav-next"
-            aria-label={labels.nextBtn}
-          >
-            <ChevronRight size={16} />
-          </button>
-
-          <div className="mockup-footer">
-            <div className="mockup-dots">
-              {toeflScreenshots.map((screen, idx) => (
-                <button
-                  key={screen.src}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentToefl(idx);
-                  }}
-                  className={`mockup-dot ${idx === currentToefl ? "active" : ""}`}
-                  aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
-                />
-              ))}
-            </div>
-            <span className="mockup-caption">{activeTitle}</span>
-          </div>
-        </div>
+        <BrowserCarousel
+          {...config}
+          lang={lang}
+          labels={labels}
+          onOpenModal={(src, title) => setModalImage({ src, title })}
+        />
 
         {modalImage && modalImage.src && (
           <div
@@ -432,7 +625,7 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             aria-modal="true"
             aria-label={modalImage.title}
           >
-            <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div ref={modalCardRef} className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="screenshot-modal-bar">
                 <span>{modalImage.title}</span>
                 <button
@@ -444,176 +637,17 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                   <X size={18} />
                 </button>
               </div>
-              <div className="screenshot-modal-body" style={{ display: "flex", justifyContent: "center", padding: "16px" }}>
-                <Image
-                  src={modalImage.src}
-                  alt={modalImage.title}
-                  width={1280}
-                  height={800}
-                  className="screenshot-modal-img"
-                  style={{ maxHeight: "80vh", width: "auto", borderRadius: 8 }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  if (kind === "bunnies") {
-    const active = bunniesScreenshots[currentBunnies];
-    const activeTitle = active.title[lang];
-    const activeTag = active.tag[lang];
-
-    const prevScreen = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentBunnies((prev) => (prev === 0 ? bunniesScreenshots.length - 1 : prev - 1));
-    };
-
-    const nextScreen = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentBunnies((prev) => (prev === bunniesScreenshots.length - 1 ? 0 : prev + 1));
-    };
-
-    const openPreview = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setModalImage({ src: active.src, title: activeTitle });
-    };
-
-    return (
-      <>
-        <div className="artwork artwork-bunnies-mockup" aria-label="BUNNIES WORLD interactive showcase">
-          <div className="mockup-header bunnies-header-accent">
-            <span>BUNNIES WORLD</span>
-            <span>/</span>
-            <span>{activeTag}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={prevScreen}
-            className="mockup-nav-btn mockup-nav-prev"
-            aria-label={labels.prevBtn}
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          <div className="browser-mockup">
-            <div className="browser-topbar">
-              <div className="browser-traffic-lights" aria-hidden="true">
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-              </div>
-              <div className="browser-address-bar">
-                <span className="browser-lock">🔒</span>
-                <span className="browser-url">bunniesworld.my.id</span>
-              </div>
-              <button
-                type="button"
-                onClick={openPreview}
-                className="browser-zoom-btn"
-                title={labels.zoomTitle}
-                aria-label={labels.zoomTitle}
+              <div
+                className="screenshot-modal-body"
+                style={kind === "toefl" ? { display: "flex", justifyContent: "center", padding: "16px" } : undefined}
               >
-                <Maximize2 size={12} />
-              </button>
-            </div>
-
-            <div className="browser-screen" onClick={openPreview}>
-              {active.type === "mobile" ? (
-                <div className="bunnies-mobile-wrapper">
-                  <div className="bunnies-mobile-phone">
-                    <Image
-                      src={active.src}
-                      alt={`BUNNIES WORLD mobile: ${activeTitle}`}
-                      fill
-                      sizes="(max-width: 640px) 200px, 300px"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                </div>
-              ) : active.type === "widget" ? (
-                <div className="bunnies-widget-wrapper">
-                  <div className="bunnies-ai-widget">
-                    <Image
-                      src={active.src}
-                      alt={`BUNNIES WORLD: ${activeTitle}`}
-                      fill
-                      sizes="(max-width: 640px) 240px, 360px"
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <Image
-                  src={active.src}
-                  alt={`BUNNIES WORLD desktop: ${activeTitle}`}
-                  fill
-                  sizes="(max-width: 640px) 320px, 600px"
-                  priority={currentBunnies === 0}
-                  className="object-cover object-top cursor-zoom-in"
-                />
-              )}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={nextScreen}
-            className="mockup-nav-btn mockup-nav-next"
-            aria-label={labels.nextBtn}
-          >
-            <ChevronRight size={16} />
-          </button>
-
-          <div className="mockup-footer">
-            <div className="mockup-dots bunnies-dots">
-              {bunniesScreenshots.map((screen, idx) => (
-                <button
-                  key={screen.src}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentBunnies(idx);
-                  }}
-                  className={`mockup-dot ${idx === currentBunnies ? "active" : ""}`}
-                  aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
-                />
-              ))}
-            </div>
-            <span className="mockup-caption bunnies-caption">{activeTitle}</span>
-          </div>
-        </div>
-
-        {modalImage && modalImage.src && (
-          <div
-            className="screenshot-modal-backdrop"
-            onClick={() => setModalImage(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={modalImage.title}
-          >
-            <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="screenshot-modal-bar">
-                <span>{modalImage.title}</span>
-                <button
-                  type="button"
-                  onClick={() => setModalImage(null)}
-                  className="screenshot-modal-close"
-                  aria-label={labels.closeModal}
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="screenshot-modal-body">
                 <Image
                   src={modalImage.src}
                   alt={modalImage.title}
-                  width={1440}
-                  height={900}
+                  width={kind === "toefl" ? 1280 : 1440}
+                  height={kind === "toefl" ? 800 : 900}
                   className="screenshot-modal-img"
+                  style={kind === "toefl" ? { maxHeight: "80vh", width: "auto", borderRadius: 8 } : undefined}
                 />
               </div>
             </div>
@@ -628,6 +662,33 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
     const havenTitle = lang === "id" ? "Haven — Ruang Aman Bercerita" : "Haven — Safe Space Dialogue";
     const havenTag = lang === "id" ? "AI & PRIVASI LOKAL" : "AI & LOCAL PRIVACY";
 
+    const havenChats = [
+      {
+        label: lang === "id" ? "Refleksi Tugas Akhir" : "Thesis Reflection",
+        user:
+          lang === "id"
+            ? "Halo Haven, belakangan ini saya merasa sedikit overwhelmed dengan target skripsi."
+            : "Hi Haven, lately I've been feeling slightly overwhelmed by thesis targets.",
+        ai:
+          lang === "id"
+            ? "Wajar sekali merasa begitu saat mengejar milestone besar. Mari kita urai menjadi 3 langkah paling realistis untuk hari ini..."
+            : "It is completely normal to feel that way when chasing big milestones. Let's break this down into 3 actionable steps today...",
+      },
+      {
+        label: lang === "id" ? "Fokus & Produktivitas" : "Focus & Flow",
+        user:
+          lang === "id"
+            ? "Bagaimana menjaga fokus deep work di sela-sela proyek client dan kuliah?"
+            : "How do I preserve deep focus while balancing client builds and university work?",
+        ai:
+          lang === "id"
+            ? "Gunakan blok waktu 50/10 dengan satu target deliverables per sesi agar context-switching berkurang drastis."
+            : "Use 50/10 time-blocking with a single concrete deliverable per block so context-switching drops sharply.",
+      },
+    ];
+
+    const currentChat = havenChats[havenActiveHistory];
+
     const openHavenModal = () => {
       setModalImage({ title: havenTitle, isCustom: true, customType: "haven" });
     };
@@ -636,6 +697,10 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
       <>
         <div className="artwork artwork-haven-mockup" aria-label="HavenGPT interactive showcase">
           <div className="mockup-header haven-header-accent">
+            <span className="mockup-live-pill mockup-live-pill-dark" aria-hidden="true">
+              <span className="mockup-live-dot" />
+              LOCAL E2E
+            </span>
             <span>HAVENGPT</span>
             <span>/</span>
             <span>{havenTag}</span>
@@ -646,12 +711,13 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
               title={labels.zoomTitle}
               aria-label={labels.zoomTitle}
               style={{ marginLeft: 4 }}
+              data-cursor="action"
             >
               <Maximize2 size={11} />
             </button>
           </div>
 
-          <div className="browser-mockup haven-browser-frame">
+          <div className="browser-mockup haven-browser-frame" data-parallax-device>
             <div className="browser-topbar">
               <div className="browser-traffic-lights" aria-hidden="true">
                 <span className="tl-dot" />
@@ -668,14 +734,14 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                 className="browser-zoom-btn"
                 title={labels.zoomTitle}
                 aria-label={labels.zoomTitle}
+                data-cursor="action"
               >
                 <Maximize2 size={12} />
               </button>
             </div>
 
             <div className="haven-screen cursor-zoom-in" onClick={openHavenModal}>
-              {/* Mini Sidebar */}
-              <div className="haven-sidebar">
+              <div className="haven-sidebar" onClick={(e) => e.stopPropagation()}>
                 <div className="haven-brand-row">
                   <div className="haven-logo-box">
                     <Heart size={12} className="text-blue-500 fill-blue-500/20" />
@@ -685,19 +751,28 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                     <span>{lang === "id" ? "Ruang Aman" : "Safe Space"}</span>
                   </div>
                 </div>
-                <div className="haven-new-btn">
+                <button
+                  type="button"
+                  onClick={() => setHavenActiveHistory((prev) => (prev === 0 ? 1 : 0))}
+                  className="haven-new-btn"
+                  data-cursor="action"
+                >
                   <Plus size={11} />
                   <span>{lang === "id" ? "Curhat Baru" : "New Chat"}</span>
-                </div>
+                </button>
                 <div className="haven-history-list">
-                  <div className="haven-history-item active">
-                    <span className="haven-dot" />
-                    <span>{lang === "id" ? "Refleksi Tugas Akhir" : "Thesis Reflection"}</span>
-                  </div>
-                  <div className="haven-history-item">
-                    <span className="haven-dot" />
-                    <span>{lang === "id" ? "Fokus & Produktivitas" : "Focus & Flow"}</span>
-                  </div>
+                  {havenChats.map((chat, idx) => (
+                    <button
+                      type="button"
+                      key={chat.label}
+                      onClick={() => setHavenActiveHistory(idx)}
+                      className={`haven-history-item ${havenActiveHistory === idx ? "active" : ""}`}
+                      data-cursor="action"
+                    >
+                      <span className="haven-dot" />
+                      <span>{chat.label}</span>
+                    </button>
+                  ))}
                 </div>
                 <div className="haven-privacy-badge">
                   <ShieldCheck size={11} />
@@ -705,26 +780,28 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                 </div>
               </div>
 
-              {/* Main Chat Canvas */}
               <div className="haven-main-chat">
-                <div className="haven-chat-feed">
-                  <div className="haven-bubble-user">
-                    <p>{lang === "id" ? "Halo Haven, belakangan ini saya merasa sedikit overwhelmed dengan target skripsi." : "Hi Haven, lately I've been feeling slightly overwhelmed by thesis targets."}</p>
+                <div className="haven-chat-feed" key={havenActiveHistory}>
+                  <div className="haven-bubble-user chat-bubble-pop">
+                    <p>{currentChat.user}</p>
                   </div>
-                  <div className="haven-bubble-ai">
+                  <div className="haven-bubble-ai chat-bubble-pop-delay">
                     <div className="haven-ai-header">
-                      <Heart size={10} className="text-blue-400" />
+                      <Sparkles size={10} className="text-blue-400" />
                       <span>Haven AI</span>
+                      <span className="haven-typing-dots" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </span>
                     </div>
                     <p>
-                      {lang === "id"
-                        ? "Wajar sekali merasa begitu saat mengejar milestone besar. Kamu sudah melangkah sejauh ini. Mari kita urai hal ini menjadi 3 langkah paling manageable untuk hari ini..."
-                        : "It is completely normal to feel that way when chasing big milestones. You've come this far already. Let's break this down into 3 actionable steps today..."}
+                      {currentChat.ai}
+                      <span className="haven-cursor-blink" aria-hidden="true" />
                     </p>
                   </div>
                 </div>
 
-                {/* Interactive Input Bar */}
                 <div className="haven-input-bar">
                   <span>{lang === "id" ? "Tulis apa yang kamu rasakan..." : "Write what you are thinking..."}</span>
                   <div className="haven-send-icon">
@@ -742,7 +819,6 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
           </div>
         </div>
 
-        {/* Modal Preview */}
         {modalImage && modalImage.isCustom && modalImage.customType === "haven" && (
           <div
             className="screenshot-modal-backdrop"
@@ -751,7 +827,11 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             aria-modal="true"
             aria-label={modalImage.title}
           >
-            <div className="screenshot-modal-content haven-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div
+              ref={modalCardRef}
+              className="screenshot-modal-content haven-modal-container"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="screenshot-modal-bar">
                 <span>{modalImage.title} · Live Architecture</span>
                 <button
@@ -779,11 +859,19 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
                 <div className="haven-modal-features">
                   <div className="haven-feat-card">
                     <h4>🔒 Privacy-First Architecture</h4>
-                    <p>{lang === "id" ? "Seluruh percakapan dienkripsi dan disimpan di local storage peramban pengguna, tanpa logs ke database luar." : "Entire conversation logs are stored securely in browser local storage without external database telemetry."}</p>
+                    <p>
+                      {lang === "id"
+                        ? "Seluruh percakapan dienkripsi dan disimpan di local storage peramban pengguna, tanpa logs ke database luar."
+                        : "Entire conversation logs are stored securely in browser local storage without external database telemetry."}
+                    </p>
                   </div>
                   <div className="haven-feat-card">
-                    <h4>⚡ Next.js & React Streaming</h4>
-                    <p>{lang === "id" ? "Antarmuka responsif dengan respons real-time streaming, mode gelap/terang, dan manajemen histori modular." : "Real-time streaming responses, dark/light theme switching, and fluid modular conversation management."}</p>
+                    <h4>⚡ Next.js &amp; React Streaming</h4>
+                    <p>
+                      {lang === "id"
+                        ? "Antarmuka responsif dengan respons real-time streaming, mode gelap/terang, dan manajemen histori modular."
+                        : "Real-time streaming responses, dark/light theme switching, and fluid modular conversation management."}
+                    </p>
                   </div>
                 </div>
                 <div className="haven-modal-cta">
@@ -799,160 +887,28 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
     );
   }
 
-  // Kind === "garden" (ILMIS GARDEN real showcase)
-  if (kind === "garden") {
-    const activeGarden = ilmisScreenshots[currentGarden];
-    const activeGardenTitle = activeGarden.title[lang];
-    const activeGardenTag = activeGarden.tag[lang];
-
-    const prevGarden = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentGarden((prev) => (prev === 0 ? ilmisScreenshots.length - 1 : prev - 1));
-    };
-
-    const nextGarden = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCurrentGarden((prev) => (prev === ilmisScreenshots.length - 1 ? 0 : prev + 1));
-    };
-
-    const openGardenPreview = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setModalImage({ src: activeGarden.src, title: activeGardenTitle });
-    };
-
-    return (
-      <>
-        <div className="artwork artwork-garden-mockup" aria-label="ILMIS GARDEN interactive showcase">
-          <div className="mockup-header garden-header-accent">
-            <span>ILMIS GARDEN</span>
-            <span>/</span>
-            <span>{activeGardenTag}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={prevGarden}
-            className="mockup-nav-btn mockup-nav-prev"
-            aria-label={labels.prevBtn}
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          <div className="browser-mockup">
-            <div className="browser-topbar">
-              <div className="browser-traffic-lights" aria-hidden="true">
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-                <span className="tl-dot" />
-              </div>
-              <div className="browser-address-bar">
-                <span className="browser-lock">🔒</span>
-                <span className="browser-url">ilmisgarden.com</span>
-              </div>
-              <button
-                type="button"
-                onClick={openGardenPreview}
-                className="browser-zoom-btn"
-                title={labels.zoomTitle}
-                aria-label={labels.zoomTitle}
-              >
-                <Maximize2 size={12} />
-              </button>
-            </div>
-
-            <div className="browser-screen" onClick={openGardenPreview}>
-              {activeGarden.type === "mobile" ? (
-                <div className="bunnies-mobile-wrapper">
-                  <div className="bunnies-mobile-phone">
-                    <Image
-                      src={activeGarden.src}
-                      alt={`ILMIS GARDEN mobile: ${activeGardenTitle}`}
-                      fill
-                      sizes="(max-width: 640px) 200px, 300px"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <Image
-                  src={activeGarden.src}
-                  alt={`ILMIS GARDEN desktop: ${activeGardenTitle}`}
-                  fill
-                  sizes="(max-width: 640px) 320px, 600px"
-                  priority={currentGarden === 0}
-                  className="object-cover object-top cursor-zoom-in"
-                />
-              )}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={nextGarden}
-            className="mockup-nav-btn mockup-nav-next"
-            aria-label={labels.nextBtn}
-          >
-            <ChevronRight size={16} />
-          </button>
-
-          <div className="mockup-footer">
-            <div className="mockup-dots garden-dots">
-              {ilmisScreenshots.map((screen, idx) => (
-                <button
-                  key={screen.src}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentGarden(idx);
-                  }}
-                  className={`mockup-dot ${idx === currentGarden ? "active" : ""}`}
-                  aria-label={`Slide ${idx + 1}: ${screen.title[lang]}`}
-                />
-              ))}
-            </div>
-            <span className="mockup-caption garden-caption">{activeGardenTitle}</span>
-          </div>
-        </div>
-
-        {modalImage && modalImage.src && (
-          <div
-            className="screenshot-modal-backdrop"
-            onClick={() => setModalImage(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={modalImage.title}
-          >
-            <div className="screenshot-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="screenshot-modal-bar">
-                <span>{modalImage.title}</span>
-                <button
-                  type="button"
-                  onClick={() => setModalImage(null)}
-                  className="screenshot-modal-close"
-                  aria-label={labels.closeModal}
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="screenshot-modal-body">
-                <Image
-                  src={modalImage.src}
-                  alt={modalImage.title}
-                  width={1440}
-                  height={900}
-                  className="screenshot-modal-img"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  }
-
   // Kind === "village" (Village Complaint App Mockup)
   const villageTitle = lang === "id" ? "Aplikasi Pengaduan Desa — QIVA Project" : "Village Complaint App — QIVA Project";
-  const villageTag = lang === "id" ? "MOBILE · CIVIC TECH" : "MOBILE · CIVIC TECH";
+  const villageTag = "MOBILE · CIVIC TECH";
+
+  const reports = [
+    {
+      id: 1,
+      status: "done" as const,
+      title: lang === "id" ? "Perbaikan Lampu RT 03" : "Streetlight Repair RT 03",
+      meta: lang === "id" ? "Fasilitas Publik · 2 jam lalu" : "Public Facility · 2h ago",
+      badge: lang === "id" ? "Selesai" : "Resolved",
+    },
+    {
+      id: 2,
+      status: "process" as const,
+      title: lang === "id" ? "Aspal Berlubang RW 05" : "Road Pothole RW 05",
+      meta: lang === "id" ? "Infrastruktur · Kemarin" : "Infrastructure · Yesterday",
+      badge: lang === "id" ? "Diproses" : "In Progress",
+    },
+  ];
+
+  const visibleReports = reports.filter((r) => villageFilter === "all" || r.status === villageFilter);
 
   const openVillageModal = () => {
     setModalImage({ title: villageTitle, isCustom: true, customType: "village" });
@@ -962,6 +918,7 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
     <>
       <div className="artwork artwork-village-mockup" aria-label="Village complaint app interactive showcase">
         <div className="mockup-header village-header-accent">
+          <Radio size={11} className="text-blue-600" />
           <span>QIVA PROJECT</span>
           <span>/</span>
           <span>{villageTag}</span>
@@ -972,59 +929,58 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
             title={labels.zoomTitle}
             aria-label={labels.zoomTitle}
             style={{ marginLeft: 4 }}
+            data-cursor="action"
           >
             <Maximize2 size={11} />
           </button>
         </div>
 
-        <div className="phone-mockup village-phone-frame cursor-zoom-in" onClick={openVillageModal}>
+        <div className="phone-mockup village-phone-frame cursor-zoom-in" data-parallax-device onClick={openVillageModal}>
           <div className="phone-notch">
             <div className="phone-camera" />
           </div>
 
           <div className="phone-screen village-screen">
-            {/* App Bar */}
             <div className="village-app-bar">
               <span className="village-app-title">{lang === "id" ? "Aspirasi Desa" : "Civic Complaint"}</span>
               <span className="village-badge">Cimahi</span>
             </div>
 
-            {/* Quick Action Cards */}
-            <div className="village-quick-grid">
-              <div className="village-action-card">
+            <div className="village-quick-grid" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => setVillageFilter((prev) => (prev === "done" ? "all" : "done"))}
+                className={`village-action-card ${villageFilter === "done" ? "active-filter" : ""}`}
+                data-cursor="action"
+              >
                 <FileText size={14} className="text-blue-500" />
                 <span>{lang === "id" ? "Buat Laporan" : "New Report"}</span>
-              </div>
-              <div className="village-action-card">
+              </button>
+              <button
+                type="button"
+                onClick={() => setVillageFilter((prev) => (prev === "process" ? "all" : "process"))}
+                className={`village-action-card ${villageFilter === "process" ? "active-filter" : ""}`}
+                data-cursor="action"
+              >
                 <Clock size={14} className="text-amber-500" />
                 <span>{lang === "id" ? "Status Aduan" : "Status"}</span>
-              </div>
+              </button>
             </div>
 
-            {/* Complaint List Feed */}
             <div className="village-feed">
               <span className="village-feed-title">{lang === "id" ? "LAPORAN TERBARU" : "RECENT REPORTS"}</span>
-              <div className="village-feed-card">
-                <div className="village-feed-header">
-                  <strong>{lang === "id" ? "Perbaikan Lampu RT 03" : "Streetlight Repair RT 03"}</strong>
-                  <span className="village-status-pill status-done">
-                    <CheckCircle2 size={9} />
-                    <span>{lang === "id" ? "Selesai" : "Resolved"}</span>
-                  </span>
+              {visibleReports.map((item) => (
+                <div className="village-feed-card" key={item.id}>
+                  <div className="village-feed-header">
+                    <strong>{item.title}</strong>
+                    <span className={`village-status-pill ${item.status === "done" ? "status-done" : "status-process"}`}>
+                      {item.status === "done" ? <CheckCircle2 size={9} /> : <AlertCircle size={9} />}
+                      <span>{item.badge}</span>
+                    </span>
+                  </div>
+                  <small>{item.meta}</small>
                 </div>
-                <small>{lang === "id" ? "Fasilitas Publik · 2 jam lalu" : "Public Facility · 2h ago"}</small>
-              </div>
-
-              <div className="village-feed-card">
-                <div className="village-feed-header">
-                  <strong>{lang === "id" ? "Aspal Berlubang RW 05" : "Road Pothole RW 05"}</strong>
-                  <span className="village-status-pill status-process">
-                    <AlertCircle size={9} />
-                    <span>{lang === "id" ? "Diproses" : "In Progress"}</span>
-                  </span>
-                </div>
-                <small>{lang === "id" ? "Infrastruktur · Kemarin" : "Infrastructure · Yesterday"}</small>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -1038,7 +994,6 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
         </div>
       </div>
 
-      {/* Modal Preview for Village App */}
       {modalImage && modalImage.isCustom && modalImage.customType === "village" && (
         <div
           className="screenshot-modal-backdrop"
@@ -1047,7 +1002,11 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
           aria-modal="true"
           aria-label={modalImage.title}
         >
-          <div className="screenshot-modal-content haven-modal-container" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={modalCardRef}
+            className="screenshot-modal-content haven-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="screenshot-modal-bar">
               <span>{modalImage.title} · Case Study</span>
               <button
@@ -1073,12 +1032,20 @@ export function ProjectArtwork({ kind, lang = "id" }: ProjectArtworkProps) {
               </div>
               <div className="haven-modal-features">
                 <div className="haven-feat-card">
-                  <h4>📱 Fitur Pelaporan & Foto Lampiran</h4>
-                  <p>{lang === "id" ? "Warga dapat mengambil foto bukti kendala langsung dari ponsel dan melampirkan titik koordinat lokasi." : "Residents can capture photo evidence directly and submit structured reports."}</p>
+                  <h4>📱 Fitur Pelaporan &amp; Foto Lampiran</h4>
+                  <p>
+                    {lang === "id"
+                      ? "Warga dapat mengambil foto bukti kendala langsung dari ponsel dan melampirkan titik koordinat lokasi."
+                      : "Residents can capture photo evidence directly and submit structured reports."}
+                  </p>
                 </div>
                 <div className="haven-feat-card">
                   <h4>📊 Pemantauan Status Real-Time</h4>
-                  <p>{lang === "id" ? "Dashboard pelacakan status: Menunggu Verifikasi → Sedang Diproses → Selesai Ditangani." : "Real-time ticket tracking from Pending Review to Work In Progress and Resolved."}</p>
+                  <p>
+                    {lang === "id"
+                      ? "Dashboard pelacakan status: Menunggu Verifikasi → Sedang Diproses → Selesai Ditangani."
+                      : "Real-time ticket tracking from Pending Review to Work In Progress and Resolved."}
+                  </p>
                 </div>
               </div>
             </div>
